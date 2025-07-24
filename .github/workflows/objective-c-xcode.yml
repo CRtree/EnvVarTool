@@ -31,7 +31,7 @@ jobs:
         run: |
           if [ $scheme = default ]; then scheme=$(cat default); fi
           
-          # Determine project type
+
           if [ -n "$(find . -name '*.xcworkspace' -print -quit)" ]; then
             filetype_parameter="-workspace"
             file_to_build="$(find . -name '*.xcworkspace' | head -1)"
@@ -40,15 +40,12 @@ jobs:
             file_to_build="$(find . -name '*.xcodeproj' | head -1)"
           fi
           
-          # Clean previous builds
           xcodebuild clean $filetype_parameter "$file_to_build" -scheme "$scheme"
           
-          # Build with explicit destination and detailed logging
           xcodebuild build $filetype_parameter "$file_to_build" -scheme "$scheme" \
             -destination "platform=macOS,arch=arm64" \
             | xcpretty --report html --output build-report.html
           
-          # Analyze with explicit destination
           xcodebuild analyze $filetype_parameter "$file_to_build" -scheme "$scheme" \
             -destination "platform=macOS,arch=arm64" \
             | xcpretty --report html --output analyze-report.html
