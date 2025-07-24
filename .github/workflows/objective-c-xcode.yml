@@ -30,8 +30,6 @@ jobs:
           scheme: ${{ 'default' }}
         run: |
           if [ $scheme = default ]; then scheme=$(cat default); fi
-          
-
           if [ -n "$(find . -name '*.xcworkspace' -print -quit)" ]; then
             filetype_parameter="-workspace"
             file_to_build="$(find . -name '*.xcworkspace' | head -1)"
@@ -39,13 +37,10 @@ jobs:
             filetype_parameter="-project"
             file_to_build="$(find . -name '*.xcodeproj' | head -1)"
           fi
-          
           xcodebuild clean $filetype_parameter "$file_to_build" -scheme "$scheme"
-          
           xcodebuild build $filetype_parameter "$file_to_build" -scheme "$scheme" \
             -destination "platform=macOS,arch=arm64" \
             | xcpretty --report html --output build-report.html
-          
           xcodebuild analyze $filetype_parameter "$file_to_build" -scheme "$scheme" \
             -destination "platform=macOS,arch=arm64" \
             | xcpretty --report html --output analyze-report.html
